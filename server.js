@@ -1,17 +1,34 @@
 const http = require("http");
 const url = require("url");
 
-const server = http.createServer((req, res) => {
+const server = http.createServer(async (req, res) => {
 
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader("Content-Type", "text/plain; charset=utf-8");
 
   const query = url.parse(req.url, true).query;
+  const message = query.msg || "سلام";
 
-  let message = query.msg || "ما كتبت حتى شيء";
+  try {
+    const response = await fetch("https://api.openai.com/v1/responses", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer " + process.env.API_KEY
+      },
+      body: JSON.stringify({
+        model: "gpt-4.1-mini",
+        input: message
+      })
+    });
 
-  res.write("إنت قلت: " + message);
-  res.end();
+    const data = await response.json();
+
+    res.end(data.output[0].content[0].text);
+
+  } catch (error) {
+    res.end("صار خطأ في الاتصال بالـ AI");
+  }
 
 });
 
