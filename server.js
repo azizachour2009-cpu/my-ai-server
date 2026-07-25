@@ -10,6 +10,7 @@ const server = http.createServer(async (req, res) => {
   const message = query.msg || "سلام";
 
   try {
+
     const response = await fetch("https://api.openai.com/v1/responses", {
       method: "POST",
       headers: {
@@ -24,10 +25,16 @@ const server = http.createServer(async (req, res) => {
 
     const data = await response.json();
 
-    res.end(data.output[0].content[0].text);
+    if (data.output) {
+      res.end(data.output[0].content[0].text);
+    } else {
+      res.end("ما فماش جواب من AI");
+    }
 
   } catch (error) {
-    res.end("صار خطأ في الاتصال بالـ AI");
+
+    res.end("صار خطأ في AI");
+
   }
 
 });
