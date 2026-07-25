@@ -25,15 +25,11 @@ const server = http.createServer(async (req, res) => {
 
     const data = await response.json();
 
-    if (data.output) {
-      res.end(data.output[0].content[0].text);
-    } else {
-      res.end("ما فماش جواب من AI");
-    }
+    res.end(JSON.stringify(data));
 
   } catch (error) {
 
-    res.end("صار خطأ في AI");
+    res.end("Error: " + error.message);
 
   }
 
